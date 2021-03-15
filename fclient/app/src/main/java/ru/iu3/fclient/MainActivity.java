@@ -2,9 +2,23 @@ package ru.iu3.fclient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toast;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import java.nio.charset.StandardCharsets;
+
+
+
+
+
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,7 +27,34 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
         System.loadLibrary("mbedcrypto");
         initRng();
+
     }
+
+
+
+    public static byte[] StringToHex(String s)
+    {
+
+        byte[] hex;
+        try{
+            hex = Hex.decodeHex(s.toCharArray());
+        }
+        catch (DecoderException ex){
+            hex = null;
+        }
+        return hex;
+    }
+
+
+
+    public void onButtonClick (View v)
+    {
+       // Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
+        Intent it = new Intent(this,PinpadActivity.class);
+        startActivityForResult(it, 0);
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +86,19 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Original: "  + originalData);
         System.out.println("Encrypted: " + encryptedData);
         System.out.println("Decrypted: " + decryptedData);
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK || data != null) {
+                String pin = data.getStringExtra("pin");
+                Toast.makeText(this, pin, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /**
