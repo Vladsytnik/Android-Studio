@@ -1,19 +1,16 @@
 package ru.iu3.rpo.backend.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.iu3.rpo.backend.models.Artist;
 import ru.iu3.rpo.backend.models.Country;
 import ru.iu3.rpo.backend.repositories.CountryRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,34 +19,42 @@ public class CountryController {
     CountryRepository countryRepository;
 
     @GetMapping("/countries")
-    public List<Country> getAllCountries(){
+    public List<Country> getAllCountries() {
         return countryRepository.findAll();
     }
 
-    @PostMapping("/countries")
-    public HttpEntity<? extends Object> createCountry(@RequestBody Country country) {
-        try{
-            Country nc = countryRepository.save(country);
-            return new ResponseEntity<Country>(nc, HttpStatus.OK);
+    @GetMapping("/countries/{id}/artists")
+    public ResponseEntity<List<Artist>> getCountryArtists(@PathVariable(value = "id") Long countryId){
+        Optional<Country> cc = countryRepository.findById(countryId);
+        if (cc.isPresent())
+        {
+            return ResponseEntity.ok(cc.get().artists);
         }
-        catch(Exception ex){
-            String error;
-            if (ex.getMessage().contains("countries.name_UNIQUE"))
-                error = "country_already_exists";
-            else
-                error = "undefined_error";
-            Map<String, String> map = new HashMap<>();
-            map.put("error", error);
-            return new ResponseEntity<Object>(map, HttpStatus.OK);
-        }
-
+        return ResponseEntity.ok(new ArrayList<Artist>());
     }
 
+    @PostMapping("/countries")
+    public ResponseEntity<Object> createCountry(@Valid @RequestBody Country country){
+        try {
+            Country nc = countryRepository.save(country);
+            return new ResponseEntity<Object>(nc, HttpStatus.OK);
+        }
+        catch (Exception ex)
+        {
+            String error;
+            if(ex.getMessage().contains("countries.name_UNIQUE"))
+                error = "countryalreadyexists";
+            else
+                error = "undefinederror";
+            Map<String, String> map = new HashMap<>();
+            map.put("error", error);
+            return ResponseEntity.ok(map);
+        }
+    }
 
-
-
-    @PostMapping("/countries/{id}")
-    public ResponseEntity<Country> updateCountry(@PathVariable(value = "id") Long countryId, @RequestBody Country countryDetails){
+    @PutMapping("/countries/{id}")
+    public ResponseEntity<Country> updateCountry(@PathVariable(value = "id") Long countryId,
+                                                 @Valid @RequestBody Country countryDetails) {
         Country country = null;
         Optional<Country> cc = countryRepository.findById(countryId);
         if (cc.isPresent())
@@ -60,15 +65,12 @@ public class CountryController {
         }
         else
         {
-            throw  new ResponseStatusException(
+            throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "country not found"
             );
         }
         return ResponseEntity.ok(country);
     }
-
-
-
 
     @DeleteMapping("/countries/{id}")
     public Map<String, Boolean> deleteCountry(@PathVariable(value = "id") Long countryId) {
@@ -85,5 +87,4 @@ public class CountryController {
         }
         return response;
     }
-
 }
