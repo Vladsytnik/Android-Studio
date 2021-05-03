@@ -53,13 +53,14 @@ public class MainActivity extends AppCompatActivity {
     {
         new Thread(() -> {
             try {
-                HttpURLConnection uc = (HttpURLConnection) (new URL("http://10.0.2.2:8081/api/v1/title").openConnection());
+//                HttpURLConnection uc = (HttpURLConnection) (new URL("http://10.0.2.2:8081/api/v1/title").openConnection());
+                HttpsURLConnection uc = (HttpsURLConnection) (new URL("https://vk.com").openConnection());
                 InputStream inputStream = uc.getInputStream();
                 String html = IOUtils.toString(inputStream);
                 String title = getPageTitle(html);
                 runOnUiThread(() ->
                 {
-                    //Toast.makeText(this, titlee, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
                     Log.e("Title_output", title);
                 });
             }
