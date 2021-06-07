@@ -30,7 +30,7 @@ class NavigationBar extends React.Component {
     }
 
     render() {
-        let uname = Utils.getUserName();
+        let uname = Utils.getUser();
         return (
             <Navbar bg="light" expand="lg">
                 <button type="button"
@@ -48,7 +48,7 @@ class NavigationBar extends React.Component {
                         <Nav.Link onClick={()=>{this.props.history.push("/home")}}>Yet another home</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
-                <Navbar.Text>{this.props.user && this.props.user.name}</Navbar.Text>
+                <Navbar.Text>{this.props.user && this.props.user.login}</Navbar.Text>
                 {this.props.user &&
                 <Nav.Link onClick={this.logout}><FontAwesomeIcon icon={faUser} fixedWidth/>{' '}Выход</Nav.Link>
                 }

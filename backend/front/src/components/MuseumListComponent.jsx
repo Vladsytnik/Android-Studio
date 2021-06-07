@@ -5,14 +5,14 @@ import {faEdit, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Alert from "./Alert";
 import PaginationComponent from "./PaginationComponent";
 
-class CountryListComponent extends Component {
+class MuseumListComponent extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             message: undefined,
-            countries: [],
-            selected_countries: [],
+            museums: [],
+            selected_museums: [],
             show_alert: false,
             checkedItems: [],
             hidden: false,
@@ -21,25 +21,25 @@ class CountryListComponent extends Component {
             totalCount: 0
         }
 
-        this.refreshCountries = this.refreshCountries.bind(this)
-        this.updateCountryClicked = this.updateCountryClicked.bind(this)
-        this.addCountryClicked = this.addCountryClicked.bind(this)
+        this.refreshMuseums = this.refreshMuseums.bind(this)
+        this.updateMuseumClicked = this.updateMuseumClicked.bind(this)
+        this.addMuseumClicked = this.addMuseumClicked.bind(this)
         this.onDelete = this.onDelete.bind(this)
         this.closeAlert = this.closeAlert.bind(this)
         this.handleCheckChange = this.handleCheckChange.bind(this)
         this.handleGroupCheckChange = this.handleGroupCheckChange.bind(this)
         this.setChecked = this.setChecked.bind(this)
-        this.deleteCountriesClicked = this.deleteCountriesClicked.bind(this)
+        this.deleteMuseumsClicked = this.deleteMuseumsClicked.bind(this)
         this.onPageChanged = this.onPageChanged.bind(this)
     }
 
     onPageChanged(cp) {
-        this.refreshCountries(cp-1)
+        this.refreshMuseums(cp-1)
     }
 
     setChecked(v)
     {
-        let checkedCopy = Array(this.state.countries.length).fill(v);
+        let checkedCopy = Array(this.state.museums.length).fill(v);
         this.setState({checkedItems: checkedCopy})
     }
 
@@ -59,9 +59,9 @@ class CountryListComponent extends Component {
         this.setChecked(isChecked);
     }
 
-    deleteCountriesClicked() {
+    deleteMuseumsClicked() {
         let x = [];
-        this.state.countries.map ((t, idx) => {
+        this.state.museums.map ((t, idx) => {
             if (this.state.checkedItems[idx]) {
                 x.push(t)
             }
@@ -83,8 +83,8 @@ class CountryListComponent extends Component {
 
     onDelete()
     {
-        BackendService.deleteCountries(this.state.selected_countries)
-            .then(() => this.refreshCountries())
+        BackendService.deleteMuseums(this.state.selected_museums)
+            .then(() => this.refreshMuseums())
             .catch(() => {})
     }
 
@@ -93,12 +93,12 @@ class CountryListComponent extends Component {
         this.setState({show_alert: false})
     }
 
-    refreshCountries(cp){
+    refreshMuseums(cp){
         console.log("cp2", this.state.page)
-        BackendService.retrieveAllCountries(cp, this.state.limit)
+        BackendService.retrieveAllMuseums(cp, this.state.limit)
             .then(
                 resp => {
-                    this.setState({countries: resp.data.content,
+                    this.setState({museums: resp.data.content,
                         totalCount: resp.data.totalElements, page: cp, hidden: false});
                 }
             )
@@ -107,15 +107,15 @@ class CountryListComponent extends Component {
     }
 
     componentDidMount() {
-        this.refreshCountries(0)
+        this.refreshMuseums(0)
     }
 
-    updateCountryClicked(id){
-        this.props.history.push(`/countries/${id}`)
+    updateMuseumClicked(id){
+        this.props.history.push(`/museums/${id}`)
     }
 
-    addCountryClicked(){
-        this.props.history.push(`/countries/-1`)
+    addMuseumClicked(){
+        this.props.history.push(`/museums/-1`)
     }
 
     render(){
@@ -124,11 +124,11 @@ class CountryListComponent extends Component {
         return (
             <div className="m-4">
                 <div className="row my-2 mr-0">
-                    <h3>Страны</h3>
+                    <h3>Музеи</h3>
                     <button className="btn btn-outline-secondary ml-auto"
-                            onClick={this.addCountryClicked}><FontAwesomeIcon icon={faPlus}/>{' '}Добавить</button>
+                            onClick={this.addMuseumClicked}><FontAwesomeIcon icon={faPlus}/>{' '}Добавить</button>
                     <button className="btn btn-outline-secondary ml-2"
-                            onClick={this.deleteCountriesClicked}><FontAwesomeIcon icon={faTrash}/>{' '}Удалить</button>
+                            onClick={this.deleteMuseumsClicked}><FontAwesomeIcon icon={faTrash}/>{' '}Удалить</button>
                 </div>
                 <div className="row my-2 mr-0">
                     <PaginationComponent
@@ -151,14 +151,14 @@ class CountryListComponent extends Component {
                         </thead>
                         <tbody>
                         {
-                            this.state.countries && this.state.countries.map((country, index)=>
-                                <tr key={country.id}>
-                                    <td>{country.name}</td>
+                            this.state.museums && this.state.museums.map((museum, index)=>
+                                <tr key={museum.id}>
+                                    <td>{museum.name}</td>
                                     <td>
                                         <div className="btn-toolbar">
                                             <div className="btn-group ml-auto">
                                                 <button className="btn btn-outline-secondary btn-sm btn-toolbar"
-                                                        onClick={()=>this.updateCountryClicked(country.id)}>
+                                                        onClick={()=>this.updateMuseumClicked(museum.id)}>
                                                     <FontAwesomeIcon icon={faEdit} fixedWidth/>
                                                 </button>
                                             </div>
@@ -187,4 +187,4 @@ class CountryListComponent extends Component {
     }
 }
 
-export default CountryListComponent;
+export default MuseumListComponent;
